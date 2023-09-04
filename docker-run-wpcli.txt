@@ -1,8 +1,0 @@
-docker run -it --rm \
-	--volumes-from wordpress-fpm-wordpress-1 \
-	--network wordpress-fpm_default \
-	-e WORDPRESS_DB_HOST=db \
-	-e WORDPRESS_DB_USER=wpuser \
-	-e WORDPRESS_DB_PASSWORD=wppass98765 \
-	-e WORDPRESS_DB_NAME=wpdb \
-	wordpress:cli user list
