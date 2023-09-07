@@ -6,12 +6,25 @@ services:
     restart: unless-stopped
     ports:
       - 80:80
+      - 443:443
     volumes:
       - wp:/var/www/html
-      - ./nginx/wp.conf:/etc/nginx/conf.d/wp.conf:ro
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/:/etc/nginx/:ro
+      - letsencrypt:/etc/letsencrypt
     depends_on:
       - wp
+      - db
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - letsencrypt:/etc/letsencrypt
+      - wp:/var/www/certbot
+    command: certonly --webroot --webroot-path=/var/www/certbot --email ${EMAIL} --agree-tos --no-eff-email -d ${DOMAIN}
+    depends_on:
+      - nginx
+      - wp
+      - db
 
   wp:
     build: ./wp
@@ -40,3 +53,4 @@ services:
 volumes:
   wp:
   db:
+  letsencrypt:
