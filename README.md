@@ -1,5 +1,7 @@
 # 3 tier Wordpress with NGINX and Docker
 
+:warning: The `env/dev.env` file is exposed intentionally. Ensure that you change the values in it before running docker compose.
+
 ![Architecture](arch/architecture.png)
 
 ## Objective
@@ -21,8 +23,7 @@ Also implement SSL using certbot and Let's Encrypt.
 Use the normal docker compose commands to bring up the stack. Due to Docker, this is a highly portable solution, though not scalable. \
 If you need a scalable solution, use a container orchestrator like Kubernetes.
 
-> Note that you need to create a `.env` file in the repo root with the variables for docker compose to work properly. \
-> Rename `env` to `.env` and fill in your secrets before running Docker Compose.
+> Note that you need to edit the `env/dev.env` file and add your secret variables for docker compose to work properly. \
 
 ```
 docker compose up -d --build
