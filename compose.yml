@@ -2,24 +2,22 @@ version: '3.1'
 
 services:
   nginx:
-    image: nginx:1.25
+    build: ./nginx
     restart: unless-stopped
-    env_file: ./env/dev.env
     ports:
       - 80:80
       - 443:443
     volumes:
       - wp:/var/www/html
-      - ./nginx/templates:/etc/nginx/templates
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - certbot:/etc/letsencrypt
+      - ./certs:/etc/letsencrypt
+      - ./certs-data:/data/letsencrypt
     depends_on:
+      - wp
       - certbot
 
   wp:
     build: ./wp
     restart: unless-stopped
-    env_file: ./env/dev.env
     volumes:
       - wp:/var/www/html
     depends_on:
@@ -28,24 +26,20 @@ services:
   db:
     image: mysql:8.1
     restart: unless-stopped
-    env_file: ./env/dev.env
     volumes:
       - db:/var/lib/mysql
 
   certbot:
     image: certbot/certbot
     restart: unless-stopped
-    env_file: ./env/dev.env
-    command: certonly --webroot --webroot-path=/var/www/html --email ${EMAIL} --agree-tos --no-eff-email --force-renewal -d ${DOMAIN}
     volumes:
-      - certbot:/etc/letsencrypt
+      - ./certs:/etc/letsencrypt
+      - ./certs-data:/data/letsencrypt
       - wp:/var/www/html
+    command: certonly --staging --webroot --webroot-path=/var/www/html -d ${LE_DOMAIN} --email ${LE_EMAIL} --agree-tos --no-eff-email
     depends_on:
       - wp
-      - db
-    
+
 volumes:
   wp:
   db:
-  certbot:
-

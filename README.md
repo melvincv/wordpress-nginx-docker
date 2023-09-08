@@ -1,6 +1,6 @@
 # 3 tier Wordpress with NGINX and Docker
 
-:warning: The `env/dev.env` file is exposed intentionally. Ensure that you change the values in it before running docker compose.
+:warning: The `env/dev.env` file is exposed intentionally
 
 ![Architecture](arch/architecture.png)
 
@@ -23,7 +23,7 @@ Also implement SSL using certbot and Let's Encrypt.
 Use the normal docker compose commands to bring up the stack. Due to Docker, this is a highly portable solution, though not scalable. \
 If you need a scalable solution, use a container orchestrator like Kubernetes.
 
-> Note that you need to edit the `env/dev.env` file and add your secret variables for docker compose to work properly. \
+> Note that you need to rename `env.sh` to `.env`, edit the `.env` file and add your secret variables for docker compose to work properly. \
 
 ```
 docker compose up -d --build
@@ -52,7 +52,7 @@ The WP CLI can be used to manage Wordpress even if the web interface is down. Mo
 
 ## Let's Encrypt SSL
 
-TODO
+Done.
 
 ## Security Headers
 
