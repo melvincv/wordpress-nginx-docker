@@ -6,14 +6,10 @@ services:
     restart: unless-stopped
     ports:
       - 80:80
-      - 443:443
     volumes:
       - wp:/var/www/html
-      - ./certs:/etc/letsencrypt
-      - ./certs-data:/data/letsencrypt
     depends_on:
       - wp
-      - certbot
 
   wp:
     build: ./wp
@@ -38,20 +34,6 @@ services:
       MYSQL_DATABASE:
       MYSQL_USER:
       MYSQL_PASSWORD:
-
-  certbot:
-    image: certbot/certbot
-    restart: unless-stopped
-    volumes:
-      - ./certs:/etc/letsencrypt
-      - ./certs-data:/data/letsencrypt
-      - wp:/var/www/html
-    command: certonly --staging --webroot --webroot-path=/var/www/html -d ${LE_DOMAIN} --email ${LE_EMAIL} --agree-tos --no-eff-email
-    depends_on:
-      - wp
-    environment:
-      LE_EMAIL:
-      LE_DOMAIN:
 
 volumes:
   wp:
