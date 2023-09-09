@@ -1,4 +1,5 @@
 readme.txt
 **/*.excalidraw
-**/*.env
+.env
 file-backup
+certs*

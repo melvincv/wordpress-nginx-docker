@@ -1,0 +1,40 @@
+version: '3.1'
+
+services:
+  nginx:
+    build: ./nginx
+    restart: unless-stopped
+    ports:
+      - 80:80
+    volumes:
+      - wp:/var/www/html
+    depends_on:
+      - wp
+
+  wp:
+    build: ./wp
+    restart: unless-stopped
+    volumes:
+      - wp:/var/www/html
+    depends_on:
+      - db
+    environment:
+      WORDPRESS_DB_HOST:
+      WORDPRESS_DB_USER:
+      WORDPRESS_DB_PASSWORD:
+      WORDPRESS_DB_NAME:
+
+  db:
+    image: mysql:8.1
+    restart: unless-stopped
+    volumes:
+      - db:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD:
+      MYSQL_DATABASE:
+      MYSQL_USER:
+      MYSQL_PASSWORD:
+
+volumes:
+  wp:
+  db:
