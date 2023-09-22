@@ -2,14 +2,22 @@ version: '3.1'
 
 services:
   nginx:
-    build: ./nginx
+    image: nginxproxy/nginx-proxy
     restart: unless-stopped
     ports:
       - 80:80
+      - 443:443
     volumes:
-      - wp:/var/www/html
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - wp:/usr/share/nginx/html
+      - certs:/etc/nginx/certs
+      - vhost:/etc/nginx/vhost.d
     depends_on:
       - wp
+    logging:
+        options:
+            max-size: "10m"
+            max-file: "3"
 
   wp:
     build: ./wp
@@ -23,6 +31,15 @@ services:
       WORDPRESS_DB_USER:
       WORDPRESS_DB_PASSWORD:
       WORDPRESS_DB_NAME:
+      VIRTUAL_HOST:
+      LETSENCRYPT_HOST: ${VIRTUAL_HOST}
+      LETSENCRYPT_EMAIL: ${DEFAULT_EMAIL}
+      VIRTUAL_PROTO: fastcgi
+      VIRTUAL_ROOT: /var/www/html
+    logging:
+        options:
+            max-size: "10m"
+            max-file: "3"
 
   db:
     image: mysql:8.1
@@ -31,10 +48,33 @@ services:
       - db:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD:
-      MYSQL_DATABASE:
-      MYSQL_USER:
-      MYSQL_PASSWORD:
+      MYSQL_DATABASE: ${WORDPRESS_DB_NAME}
+      MYSQL_USER: ${WORDPRESS_DB_USER}
+      MYSQL_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+    logging:
+        options:
+            max-size: "10m"
+            max-file: "3"
+    
+  acme:
+    image: nginxproxy/acme-companion
+    restart: unless-stopped
+    volumes_from:
+      - nginx
+    volumes:
+      - acme:/etc/acme.sh
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+        DEFAULT_EMAIL:
+        LETSENCRYPT_TEST:
+    logging:
+        options:
+            max-size: "10m"
+            max-file: "3"
 
 volumes:
   wp:
   db:
+  certs:
+  acme:
+  vhost:

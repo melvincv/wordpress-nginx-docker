@@ -1,0 +1,75 @@
+version: '3.9'
+
+services:
+  wp:
+    image: wordpress:latest
+    container_name: wordpress-app
+    restart: unless-stopped
+    expose:
+      - 8080
+    volumes:
+      - ./config/php.conf.ini:/usr/local/etc/php/conf.d/conf.ini
+      - ./wp-app:/var/www/html
+      #- ./plugin-name/trunk/:/var/www/html/wp-content/plugins/plugin-name # Plugin development
+      #- ./theme-name/trunk/:/var/www/html/wp-content/themes/theme-name # Theme development
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_NAME: "${DB_NAME}"
+      WORDPRESS_DB_USER: "${DB_USER_NAME}"
+      WORDPRESS_DB_PASSWORD: "${DB_USER_PASSWORD}"
+      VIRTUAL_HOST: racknerdtv.com,www.racknerdtv.com
+      LETSENCRYPT_HOST: racknerdtv.com,www.racknerdtv.com
+    depends_on:
+      - db
+    links:
+      - db
+
+  db:
+    image: mysql:latest
+    container_name: wordpressdb
+    restart: unless-stopped
+    command: [
+        '--default_authentication_plugin=mysql_native_password',
+        '--character-set-server=utf8mb4',
+        '--collation-server=utf8mb4_unicode_ci'
+    ]
+    volumes:
+      - ./wp-data:/docker-entrypoint-initdb.d
+      - db_data:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: "${DB_NAME}"
+      MYSQL_ROOT_PASSWORD: "${DB_ROOT_PASSWORD}"
+      MYSQL_USER: "${DB_USER_NAME}"
+      MYSQL_PASSWORD: "${DB_USER_PASSWORD}"
+
+  nginx:
+    container_name: nginx
+    image: nginxproxy/nginx-proxy
+    restart: unless-stopped
+    ports:
+        - 80:80
+        - 443:443
+    volumes:
+        - /var/run/docker.sock:/tmp/docker.sock:ro
+        - ./nginx/html:/usr/share/nginx/html
+        - ./nginx/certs:/etc/nginx/certs
+        - ./nginx/vhost:/etc/nginx/vhost.d
+    logging:
+        options:
+            max-size: "10m"
+            max-file: "3"
+
+  acme-companion:
+    container_name: acme-companion
+    image: nginxproxy/acme-companion
+    restart: unless-stopped
+    volumes_from:
+        - nginx
+    volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+        - ./nginx/acme:/etc/acme.sh
+    environment:
+        DEFAULT_EMAIL: certbot@racknerdtv.com
+
+volumes:
+  db_data:
