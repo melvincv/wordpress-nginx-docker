@@ -1,45 +1,34 @@
-version: '3.1'
+version: '3.8'
 
 services:
   nginx:
-    image: nginxproxy/nginx-proxy
+    build: ./nginx
     restart: unless-stopped
     ports:
       - 80:80
       - 443:443
     volumes:
-      - /var/run/docker.sock:/tmp/docker.sock:ro
-      - wp:/usr/share/nginx/html
-      - certs:/etc/nginx/certs
-      - vhost:/etc/nginx/vhost.d
+      - ./www:/var/www/html
+      - /etc/letsencrypt:/etc/letsencrypt
     depends_on:
       - wp
-    logging:
-        options:
-            max-size: "10m"
-            max-file: "3"
+    networks:
+      - wp
 
   wp:
     build: ./wp
     restart: unless-stopped
     volumes:
-      - wp:/var/www/html
+      - ./www:/var/www/html
     depends_on:
       - db
     environment:
-      WORDPRESS_DB_HOST:
+      WORDPRESS_DB_HOST: db:3306
       WORDPRESS_DB_USER:
       WORDPRESS_DB_PASSWORD:
       WORDPRESS_DB_NAME:
-      VIRTUAL_HOST:
-      LETSENCRYPT_HOST: ${VIRTUAL_HOST}
-      LETSENCRYPT_EMAIL: ${DEFAULT_EMAIL}
-      VIRTUAL_PROTO: fastcgi
-      VIRTUAL_ROOT: /var/www/html
-    logging:
-        options:
-            max-size: "10m"
-            max-file: "3"
+    networks:
+      - wp
 
   db:
     image: mysql:8.1
@@ -51,30 +40,21 @@ services:
       MYSQL_DATABASE: ${WORDPRESS_DB_NAME}
       MYSQL_USER: ${WORDPRESS_DB_USER}
       MYSQL_PASSWORD: ${WORDPRESS_DB_PASSWORD}
-    logging:
-        options:
-            max-size: "10m"
-            max-file: "3"
-    
-  acme:
-    image: nginxproxy/acme-companion
+    networks:
+      - wp
+
+  adminer:
+    image: adminer
     restart: unless-stopped
-    volumes_from:
-      - nginx
-    volumes:
-      - acme:/etc/acme.sh
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - 10000:8080
     environment:
-        DEFAULT_EMAIL:
-        LETSENCRYPT_TEST:
-    logging:
-        options:
-            max-size: "10m"
-            max-file: "3"
+      - ADMINER_DEFAULT_SERVER=db
+    networks:
+      - wp
 
 volumes:
-  wp:
   db:
-  certs:
-  acme:
-  vhost:
+
+networks:
+  wp:

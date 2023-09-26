@@ -3,3 +3,4 @@ readme.txt
 .env
 file-backup
 certs*
+www/
