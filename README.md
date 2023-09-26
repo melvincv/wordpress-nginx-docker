@@ -96,6 +96,8 @@ The WP CLI can be used to manage Wordpress even if the web interface is down. Mo
 
 [Script](wpcli.sh)
 
+Example: `wpcli.sh user list`
+
 ## Security Headers
 
 TODO
