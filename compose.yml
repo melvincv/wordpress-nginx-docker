@@ -1,4 +1,4 @@
-version: '3'
+version: '3.8'
 
 services:
   nginx:
@@ -11,6 +11,8 @@ services:
       - ./www:/var/www/html
       - /etc/letsencrypt:/etc/letsencrypt
     depends_on:
+      - wp
+    networks:
       - wp
 
   wp:
@@ -25,6 +27,8 @@ services:
       WORDPRESS_DB_USER:
       WORDPRESS_DB_PASSWORD:
       WORDPRESS_DB_NAME:
+    networks:
+      - wp
 
   db:
     image: mysql:8.1
@@ -36,6 +40,8 @@ services:
       MYSQL_DATABASE: ${WORDPRESS_DB_NAME}
       MYSQL_USER: ${WORDPRESS_DB_USER}
       MYSQL_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+    networks:
+      - wp
 
   adminer:
     image: adminer
@@ -44,6 +50,11 @@ services:
       - 10000:8080
     environment:
       - ADMINER_DEFAULT_SERVER=db
+    networks:
+      - wp
 
 volumes:
   db:
+
+networks:
+  wp:
