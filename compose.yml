@@ -1,4 +1,4 @@
-version: '3.1'
+version: '3'
 
 services:
   nginx:
@@ -6,8 +6,10 @@ services:
     restart: unless-stopped
     ports:
       - 80:80
+      - 443:443
     volumes:
-      - wp:/var/www/html
+      - ./www:/var/www/html
+      - /etc/letsencrypt:/etc/letsencrypt
     depends_on:
       - wp
 
@@ -15,11 +17,11 @@ services:
     build: ./wp
     restart: unless-stopped
     volumes:
-      - wp:/var/www/html
+      - ./www:/var/www/html
     depends_on:
       - db
     environment:
-      WORDPRESS_DB_HOST:
+      WORDPRESS_DB_HOST: db:3306
       WORDPRESS_DB_USER:
       WORDPRESS_DB_PASSWORD:
       WORDPRESS_DB_NAME:
@@ -31,10 +33,17 @@ services:
       - db:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD:
-      MYSQL_DATABASE:
-      MYSQL_USER:
-      MYSQL_PASSWORD:
+      MYSQL_DATABASE: ${WORDPRESS_DB_NAME}
+      MYSQL_USER: ${WORDPRESS_DB_USER}
+      MYSQL_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+
+  adminer:
+    image: adminer
+    restart: unless-stopped
+    ports:
+      - 10000:8080
+    environment:
+      - ADMINER_DEFAULT_SERVER=db
 
 volumes:
-  wp:
   db:
