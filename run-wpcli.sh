@@ -8,7 +8,12 @@ DB_PASSWORD=
 DB_NAME=
 DOCKER_NETWORK=
 WP_CONTAINER=
-WP_COMMAND="user list"
+WP_COMMAND=$@
+
+if [ -z "$1" ]; then
+	echo Usage: `basename $0` WP_COMMAND
+	exit 1
+fi
 
 # Docker run it
 docker run -it --rm \
