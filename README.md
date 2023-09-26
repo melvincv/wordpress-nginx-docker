@@ -94,7 +94,7 @@ This is used for building a custom wordpress-fpm image with the PHP settings tha
 
 The WP CLI can be used to manage Wordpress even if the web interface is down. Modify the variables and run the script:
 
-[Script](run-wpcli.sh)
+[Script](wpcli.sh)
 
 ## Security Headers
 
