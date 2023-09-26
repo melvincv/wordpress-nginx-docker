@@ -7,7 +7,7 @@ DOMAINS=wp.awsl.melvincv.com
 # email id for certificate renewal
 EMAILID=
 # Staging CA for testing?
-STAGING=true
+STAGING=1
 
 # Check if run as root
 if [ ${EUID} -ne 0 ]; then
@@ -34,7 +34,7 @@ if [ ! -e "$(which certbot)" ]; then
 fi
 
 # Get certs with a built-in web server
-if [ ${STAGING} == "true" ]; then
+if [ ${STAGING} -eq 1 ]; then
     certbot certonly --standalone -d ${DOMAINS} --agree-tos --email ${EMAILID} --server https://acme-staging-v02.api.letsencrypt.org/directory
 else
     certbot certonly --standalone -d ${DOMAINS} --agree-tos --email ${EMAILID}
