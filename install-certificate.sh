@@ -35,7 +35,7 @@ fi
 
 # Get certs with a built-in web server
 if [ ${STAGING} == true ]; then
-    certbot certonly --standalone -d ${DOMAINS} --agree-tos --email ${EMAILID} --server https://acme-staging-v02.api.letsencrypt.org/directory
+    certbot certonly --standalone -d ${DOMAINS} --agree-tos --email ${EMAILID} --server https://acme-staging-v02.api.letsencrypt.org/directory --non-interactive
 else
-    certbot certonly --standalone -d ${DOMAINS} --agree-tos --email ${EMAILID}
+    certbot certonly --standalone -d ${DOMAINS} --agree-tos --email ${EMAILID} --non-interactive
 fi
