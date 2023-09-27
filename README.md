@@ -1,5 +1,7 @@
 # 3 tier Wordpress with NGINX and Docker
 
+![Architecture](arch/architecture.png)
+
 ## Objective
 
 Run a 3 tier Wordpress site on a **single instance** using Docker Compose. Static file caching should be enabled on the client side. \
