@@ -1,0 +1,9 @@
+FROM nginx:1.25
+ARG CERTPATH="/etc/nginx/ssl"
+RUN openssl dhparam -out /etc/nginx/dhparam.pem 4096
+RUN mkdir -p ${CERTPATH} \
+    && openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+    -keyout ${CERTPATH}/selfsigned.key -out ${CERTPATH}/selfsigned.crt \
+    -subj "/C=IN/ST=Kerala/L=Kochi/O=Upwork/CN=wp.awsl.melvincv.com"
+COPY nginx.conf ssl-params.conf /etc/nginx/
+COPY wp-ss-ssl.conf /etc/nginx/conf.d/default.conf

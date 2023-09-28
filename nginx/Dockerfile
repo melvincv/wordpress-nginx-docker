@@ -1,3 +1,4 @@
 FROM nginx:1.25
-COPY nginx.conf /etc/nginx/nginx.conf
+RUN openssl dhparam -out /etc/nginx/dhparam.pem 4096
+COPY nginx.conf ssl-params.conf /etc/nginx/
 COPY wp.conf /etc/nginx/conf.d/default.conf

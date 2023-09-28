@@ -1,5 +1,7 @@
 # 3 tier Wordpress with NGINX and Docker
 
+![Architecture](arch/architecture.png)
+
 ## Objective
 
 Run a 3 tier Wordpress site on a **single instance** using Docker Compose. Static file caching should be enabled on the client side. \
@@ -98,6 +100,6 @@ The WP CLI can be used to manage Wordpress even if the web interface is down. Mo
 
 Example: `wpcli.sh user list`
 
-## Security Headers
+## Security Parameters
 
-TODO
+Done, [Security Parameters](nginx/ssl-params.conf)
