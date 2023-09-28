@@ -103,3 +103,9 @@ Example: `wpcli.sh user list`
 ## Security Parameters
 
 Done, [Security Parameters](nginx/ssl-params.conf)
+
+## Self Signed Certificates
+
+[Resources](self-signed-certs)
+
+README: TODO
